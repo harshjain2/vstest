@@ -80,9 +80,14 @@ namespace Microsoft.VisualStudio.TestPlatform.CrossPlatEngine.DataCollection
         /// </param>
         public void HandleTestRunComplete(TestRunCompleteEventArgs testRunCompleteArgs, TestRunChangedEventArgs lastChunkArgs, ICollection<AttachmentSet> runContextAttachments, ICollection<string> executorUris)
         {
-            var attachmentSet = this.proxyDataCollectionManager?.AfterTestRunEnd(false, this);
-            attachmentSet = DataCollectionTestRunEventsHandler.GetCombinedAttachmentSets(attachmentSet, runContextAttachments);
-            this.testRunEventsHandler.HandleTestRunComplete(testRunCompleteArgs, lastChunkArgs, attachmentSet, executorUris);
+            var attachmentSets = this.proxyDataCollectionManager?.AfterTestRunEnd(false, this);
+            foreach(var attachmentSet in attachmentSets)
+            {
+                testRunCompleteArgs.AttachmentSets.Add(attachmentSet);
+            }
+                //DataCollectionTestRunEventsHandler.GetCombinedAttachmentSets(attachmentSet, runContextAttachments);
+
+            this.testRunEventsHandler.HandleTestRunComplete(testRunCompleteArgs, lastChunkArgs, runContextAttachments, executorUris);
         }
 
         /// <summary>

@@ -16,6 +16,8 @@ namespace Microsoft.VisualStudio.TestPlatform.Client.Execution
 
     using ClientResources = Microsoft.VisualStudio.TestPlatform.Client.Resources.Resources;
     using System.Collections.ObjectModel;
+    using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+    using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 
     public class TestRunRequest : ITestRunRequest, ITestRunEventsHandler
     {
@@ -255,6 +257,17 @@ namespace Microsoft.VisualStudio.TestPlatform.Client.Execution
             {
                 throw new ArgumentNullException(nameof(runCompleteArgs));
             }
+
+            // Send raw message first to unblock handlers waiting to send message to IDEs
+            var msg = JsonDataSerializer.Instance.SerializePayload(MessageType.ExecutionComplete, new TestRunCompletePayload()
+            {
+                TestRunCompleteArgs = runCompleteArgs,
+                LastRunTests = lastChunkArgs,
+                RunAttachments = runContextAttachments,
+                ExecutorUris = executorUris
+            });
+
+            this.HandleRawMessage(msg);
 
             bool isAborted = runCompleteArgs.IsAborted;
             bool isCanceled = runCompleteArgs.IsCanceled;

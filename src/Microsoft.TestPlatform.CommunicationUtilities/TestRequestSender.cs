@@ -215,12 +215,12 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
                 {
                     var rawMessage = this.TryReceiveRawMessage();
 
-                    // Send raw message first to unblock handlers waiting to send message to IDEs
-                    testRunEventsHandler.HandleRawMessage(rawMessage);
-
                     var message = this.dataSerializer.DeserializeMessage(rawMessage);
                     if (string.Equals(MessageType.TestRunStatsChange, message.MessageType))
                     {
+                        // Send raw message first to unblock handlers waiting to send message to IDEs
+                        testRunEventsHandler.HandleRawMessage(rawMessage);
+
                         var testRunChangedArgs = this.dataSerializer.DeserializePayload<TestRunChangedEventArgs>(
                             message);
                         testRunEventsHandler.HandleTestRunStatsChange(testRunChangedArgs);
@@ -235,10 +235,13 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
                             testRunCompletePayload.LastRunTests,
                             testRunCompletePayload.RunAttachments,
                             testRunCompletePayload.ExecutorUris);
-                        isTestRunComplete = true;
+                       isTestRunComplete = true;                        
                     }
                     else if (string.Equals(MessageType.TestMessage, message.MessageType))
                     {
+                        // Send raw message first to unblock handlers waiting to send message to IDEs
+                        testRunEventsHandler.HandleRawMessage(rawMessage);
+
                         var testMessagePayload = this.dataSerializer.DeserializePayload<TestMessagePayload>(message);
                         testRunEventsHandler.HandleLogMessage(
                             testMessagePayload.MessageLevel,
@@ -246,12 +249,20 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
                     }
                     else if (string.Equals(MessageType.LaunchAdapterProcessWithDebuggerAttached, message.MessageType))
                     {
+                        // Send raw message first to unblock handlers waiting to send message to IDEs
+                        testRunEventsHandler.HandleRawMessage(rawMessage);
+
                         var testProcessStartInfo = this.dataSerializer.DeserializePayload<TestProcessStartInfo>(message);
                         int processId = testRunEventsHandler.LaunchProcessWithDebuggerAttached(testProcessStartInfo);
 
                         this.communicationManager.SendMessage(
                             MessageType.LaunchAdapterProcessWithDebuggerAttachedCallback,
                             processId);
+                    }
+                    else
+                    {
+                        // Send raw message first to unblock handlers waiting to send message to IDEs
+                        testRunEventsHandler.HandleRawMessage(rawMessage);
                     }
                 }
                 catch (IOException exception)
@@ -326,7 +337,7 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
             };
             rawMessage = this.dataSerializer.SerializePayload(MessageType.DiscoveryComplete, payload);
             eventHandler.HandleRawMessage(rawMessage);
-            
+
             // Complete discovery
             eventHandler.HandleDiscoveryComplete(-1, null, true);
 
