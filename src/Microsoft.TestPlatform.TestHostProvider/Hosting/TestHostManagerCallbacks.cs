@@ -8,7 +8,6 @@ namespace Microsoft.TestPlatform.TestHostProvider.Hosting
     using System.Text;
     using Microsoft.VisualStudio.TestPlatform.ObjectModel;
     using Microsoft.VisualStudio.TestPlatform.ObjectModel.Host;
-    using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
     using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 
     internal class TestHostManagerCallbacks
@@ -47,7 +46,6 @@ namespace Microsoft.TestPlatform.TestHostProvider.Hosting
 
         public static void ExitCallBack(
             IProcessHelper processHelper,
-            IMessageLogger messageLogger,
             object process,
             StringBuilder testHostProcessStdError,
             Action<HostProviderEventArgs> onHostExited)
