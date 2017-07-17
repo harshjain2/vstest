@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
                 throw connectAsyncTask.Exception;
             }
 
-            this.stream = new BufferedStream(this.tcpClient.GetStream(), 8 * 1024);
+            this.stream = new BufferedStream(this.tcpClient.GetStream(), 1024 * 1024);
             this.channel = this.channelFactory(this.stream);
             if (this.ServerConnected != null)
             {
