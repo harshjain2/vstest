@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.TestPlatform.CommunicationUtilities
         /// The server stream read timeout constant (in microseconds).
         /// </summary>
         private const int STREAMREADTIMEOUT = 1000 * 1000;
-        private const int BUFFERSIZE = 8 * 1024;
+        private const int BUFFERSIZE = 1024 * 1024;
 
         /// <summary>
         /// TCP Listener to host TCP channel and listen
